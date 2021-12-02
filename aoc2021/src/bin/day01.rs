@@ -2,7 +2,7 @@ use aoc;
 
 fn main() {
     let input = aoc::read_input(1);
-    let input: Vec<i32> = input.lines().filter_map(|s| s.parse().ok()).collect();
+    let input: Vec<i32> = input.lines().map(|s| s.parse().unwrap()).collect();
 
     println!("{}", part_1(&input));
     println!("{}", part_2(&input));
