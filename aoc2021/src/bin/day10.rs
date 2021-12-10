@@ -2,25 +2,24 @@ use aoc;
 
 fn main() {
     let input = aoc::read_input(10);
-    let input: Vec<&str> = input.lines().collect();
+    let input: Vec<Vec<char>> = input.lines().map(|s| s.chars().collect()).collect();
 
     println!("{}", part_1(&input));
     println!("{}", part_2(&input));
 }
 
 // PART 1
-fn part_1(lines: &[&str]) -> u32 {
+fn part_1(lines: &Vec<Vec<char>>) -> u32 {
     lines
         .iter()
-        .map(|s| s.chars().collect::<Vec<char>>())
         .filter_map(find_first_illegal_char)
         .map(get_points_1)
         .sum()
 }
 
-fn find_first_illegal_char(line: Vec<char>) -> Option<char> {
+fn find_first_illegal_char(line: &Vec<char>) -> Option<char> {
     let mut stack: Vec<char> = vec![];
-    for c in line {
+    for &c in line {
         match c {
             '(' | '[' | '{' | '<' => stack.push(c),
             ')' | ']' | '}' | '>' => {
@@ -46,21 +45,17 @@ fn get_points_1(c: char) -> u32 {
 }
 
 // PART 2
-fn part_2(lines: &[&str]) -> u64 {
-    let mut scores: Vec<u64> = lines
-        .iter()
-        .map(|s| s.chars().collect::<Vec<char>>())
-        .filter_map(get_total_score)
-        .collect();
+fn part_2(lines: &Vec<Vec<char>>) -> u64 {
+    let mut scores: Vec<u64> = lines.iter().filter_map(get_total_score).collect();
 
     scores.sort();
 
     scores[scores.len() / 2]
 }
 
-fn get_total_score(line: Vec<char>) -> Option<u64> {
+fn get_total_score(line: &Vec<char>) -> Option<u64> {
     let mut stack: Vec<char> = vec![];
-    for c in line {
+    for &c in line {
         match c {
             '(' | '[' | '{' | '<' => stack.push(c),
             ')' | ']' | '}' | '>' => {
