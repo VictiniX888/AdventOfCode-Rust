@@ -8,8 +8,8 @@ use aoc;
 fn main() {
     let input = aoc::read_input(13);
     let (points, folds) = input.split_once("\n\n").unwrap();
-    let points: Vec<Point> = points.lines().map(|s| s.parse().unwrap()).collect();
-    let folds: Vec<FoldInstruction> = folds.lines().map(|s| s.parse().unwrap()).collect();
+    let points: Vec<Point> = points.lines().map(aoc::parse_str).collect();
+    let folds: Vec<FoldInstruction> = folds.lines().map(aoc::parse_str).collect();
 
     println!("{}", part_1(&points, &folds));
     println!("{}", part_2(&points, &folds));
