@@ -1,3 +1,4 @@
+#[allow(dead_code)]
 pub mod day01;
 
 use std::{fmt::Display, fs};

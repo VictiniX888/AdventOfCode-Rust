@@ -1,7 +1,36 @@
 use crate::{Answer, AnswerSet, Solution};
 
-pub const SOLUTION: Solution<fn(&str) -> AnswerSet> = Solution { day: 1, solve };
+pub const SOLUTION: Solution<fn(&str) -> AnswerSet> = Solution {
+    day: 1,
+    solve: solve_optimized,
+};
 
+/* ======== OPTIMIZED ======== */
+// (~50 us)
+fn solve_optimized(input: &str) -> AnswerSet {
+    let iter = input
+        .split_terminator("\n\n")
+        .map(|group| group.lines().map(|n| n.parse::<u32>().unwrap()).sum());
+
+    let (a, b, c) = iter.fold((0, 0, 0), |acc, n| rank(n, acc));
+
+    AnswerSet {
+        p1: Answer::U32(a),
+        p2: Answer::U32(a + b + c),
+    }
+}
+
+fn rank(n: u32, (a, b, c): (u32, u32, u32)) -> (u32, u32, u32) {
+    match n {
+        n if n >= a => (n, a, b),
+        n if n >= b => (a, n, b),
+        n if n >= c => (a, b, n),
+        _ => (a, b, c),
+    }
+}
+
+/* ======== FIRST ATTEMPT ======== */
+// (~300 us)
 fn solve(input: &str) -> AnswerSet {
     let input = parse_input(input);
     AnswerSet {

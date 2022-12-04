@@ -7,6 +7,6 @@ pub fn bench_day01(c: &mut Criterion) {
     });
 }
 
-criterion_group!(day01, bench_day01);
+criterion_group!(all, bench_day01);
 
-criterion_main!(day01);
+criterion_main!(all);
