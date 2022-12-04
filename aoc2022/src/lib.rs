@@ -1,10 +1,12 @@
-#[allow(dead_code)]
+#![allow(dead_code)]
 pub mod day01;
+pub mod day02;
 
 use std::{fmt::Display, fs};
 
 pub enum Answer {
     String(String),
+    U16(u16),
     U32(u32),
 }
 
@@ -15,6 +17,7 @@ impl Display for Answer {
             "{}",
             match self {
                 Self::String(str) => str.clone(),
+                Self::U16(num) => num.to_string(),
                 Self::U32(num) => num.to_string(),
             }
         )

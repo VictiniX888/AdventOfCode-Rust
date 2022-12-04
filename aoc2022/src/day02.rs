@@ -1,11 +1,99 @@
-use aoc2022::read_input;
+use crate::{Answer, AnswerSet, Solution};
 
-fn main() {
-    let input = read_input(2);
-    let input = parse_input(&input);
+pub const SOLUTION: Solution<fn(&str) -> AnswerSet> = Solution {
+    day: 2,
+    solve: solve_optimized,
+};
 
-    println!("Part 1: {}", part_1(&input));
-    println!("Part 2: {}", part_2(&input));
+/* ======== OPTIMIZED (MATH) ======== */
+// (~30 us)
+fn solve_optimized(input: &str) -> AnswerSet {
+    let iter = input.lines();
+
+    let (p1, p2) = iter
+        .map(|line| {
+            let mut line = line.bytes();
+            // Outcome is player hand for part 1, match outcome for part 2
+            let (opponent, outcome) = (line.next().unwrap(), line.skip(1).next().unwrap());
+            let diff = (outcome - opponent + 2) % 3;
+            let outcome_norm = outcome - b'X';
+            let score1 = outcome_norm + 1 + (diff * 3);
+            let player = (opponent - b'A' + outcome_norm + 2) % 3 + 1;
+            let score2 = outcome_norm * 3 + player;
+            (score1, score2)
+        })
+        .fold((0, 0), |acc, (score1, score2)| {
+            (acc.0 + score1 as u16, acc.1 + score2 as u16)
+        });
+
+    AnswerSet {
+        p1: Answer::U16(p1),
+        p2: Answer::U16(p2),
+    }
+}
+
+/* ======== OPTIMIZED (MATCHERS) ======== */
+// (~40 us)
+fn solve_match(input: &str) -> AnswerSet {
+    let iter = input.lines();
+
+    let (p1, p2) = iter
+        .map(|line| {
+            let mut line = line.bytes();
+            // Outcome is player hand for part 1, match outcome for part 2
+            let (opponent, outcome) = (line.next().unwrap(), line.skip(1).next().unwrap());
+            let score1 = part_1_match(opponent, outcome);
+            let score2 = part_2_match(opponent, outcome);
+            (score1, score2)
+        })
+        .fold((0, 0), |acc, (score1, score2)| {
+            (acc.0 + score1, acc.1 + score2)
+        });
+
+    AnswerSet {
+        p1: Answer::U16(p1),
+        p2: Answer::U16(p2),
+    }
+}
+
+fn part_1_match(opponent: u8, player: u8) -> u16 {
+    match (opponent, player) {
+        (b'B', b'X') => 1,
+        (b'C', b'Y') => 2,
+        (b'A', b'Z') => 3,
+        (b'A', b'X') => 4,
+        (b'B', b'Y') => 5,
+        (b'C', b'Z') => 6,
+        (b'C', b'X') => 7,
+        (b'A', b'Y') => 8,
+        (b'B', b'Z') => 9,
+        _ => unreachable!(),
+    }
+}
+
+fn part_2_match(opponent: u8, outcome: u8) -> u16 {
+    match (opponent, outcome) {
+        (b'B', b'X') => 1,
+        (b'C', b'X') => 2,
+        (b'A', b'X') => 3,
+        (b'A', b'Y') => 4,
+        (b'B', b'Y') => 5,
+        (b'C', b'Y') => 6,
+        (b'C', b'Z') => 7,
+        (b'A', b'Z') => 8,
+        (b'B', b'Z') => 9,
+        _ => unreachable!(),
+    }
+}
+
+/* ======== FIRST ATTEMPT ======== */
+// (~110 us)
+fn solve(input: &str) -> AnswerSet {
+    let input = parse_input(input);
+    AnswerSet {
+        p1: Answer::U32(part_1(&input)),
+        p2: Answer::U32(part_2(&input)),
+    }
 }
 
 fn parse_input(input: &str) -> Vec<(&str, &str)> {
