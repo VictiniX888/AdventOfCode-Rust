@@ -1,6 +1,6 @@
-use crate::{Answer, AnswerSet, Solution};
+use crate::*;
 
-pub const SOLUTION: Solution<fn(&str) -> AnswerSet> = Solution {
+pub const SOLUTION: Solution = Solution {
     day: 2,
     solve: solve_optimized,
 };

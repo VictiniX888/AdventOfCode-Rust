@@ -1,6 +1,7 @@
 #![allow(dead_code)]
 pub mod day01;
 pub mod day02;
+pub mod day03;
 
 use std::{fmt::Display, fs};
 
@@ -29,18 +30,12 @@ pub struct AnswerSet {
     pub p2: Answer,
 }
 
-pub struct Solution<F>
-where
-    F: Fn(&str) -> AnswerSet,
-{
+pub struct Solution {
     day: u8,
-    pub solve: F,
+    pub solve: fn(&str) -> AnswerSet,
 }
 
-pub fn run<F>(solution: Solution<F>) -> AnswerSet
-where
-    F: Fn(&str) -> AnswerSet,
-{
+pub fn run(solution: Solution) -> AnswerSet {
     let input = read_input(solution.day);
     (solution.solve)(&input)
 }
