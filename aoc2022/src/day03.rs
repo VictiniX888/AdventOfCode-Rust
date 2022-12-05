@@ -3,7 +3,7 @@ use std::collections::HashSet;
 
 pub const SOLUTION: Solution = Solution {
     day: 3,
-    solve: solve_bitmask,
+    solve: solve_optimized,
 };
 
 /* ======== OPTIMIZED (BITMASK) ======== */
@@ -64,7 +64,7 @@ fn find_common_bit(bits1: &u64, bits2: &u64) -> u16 {
 }
 
 /* ======== OPTIMIZED (INTERSECTION) ======== */
-// ~230 us
+// ~115 us
 fn solve_optimized(input: &str) -> AnswerSet {
     let iter = input.lines();
 
@@ -80,7 +80,7 @@ fn solve_optimized(input: &str) -> AnswerSet {
             unique.clear();
             unique.extend(bag.bytes());
         } else {
-            let items: HashSet<u8> = HashSet::from_iter(bag.bytes());
+            let items: Vec<u8> = Vec::from_iter(bag.bytes());
             unique.retain(|item| items.contains(item));
         }
 
