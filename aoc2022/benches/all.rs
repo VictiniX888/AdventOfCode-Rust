@@ -21,6 +21,13 @@ pub fn bench_day03(c: &mut Criterion) {
     });
 }
 
-criterion_group!(all, bench_day01, bench_day02, bench_day03);
+pub fn bench_day04(c: &mut Criterion) {
+    let input = black_box(aoc2022::read_input(4));
+    c.bench_function("Day 04", |b| {
+        b.iter(|| (aoc2022::day04::SOLUTION.solve)(&input))
+    });
+}
+
+criterion_group!(all, bench_day01, bench_day02, bench_day03, bench_day04);
 
 criterion_main!(all);
