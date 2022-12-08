@@ -5,6 +5,7 @@ pub mod day03;
 pub mod day04;
 pub mod day05;
 pub mod day06;
+pub mod day07;
 
 use std::{fmt::Display, fs};
 
@@ -12,6 +13,7 @@ pub enum Answer {
     String(String),
     U16(u16),
     U32(u32),
+    U64(u64),
     Usize(usize),
 }
 
@@ -24,6 +26,7 @@ impl Display for Answer {
                 Self::String(str) => str.clone(),
                 Self::U16(num) => num.to_string(),
                 Self::U32(num) => num.to_string(),
+                Self::U64(num) => num.to_string(),
                 Self::Usize(num) => num.to_string(),
             }
         )
