@@ -24,8 +24,8 @@ fn solve(input: &str) -> AnswerSet {
         let steps = parse_u8_from_ascii_iter(&mut iter);
 
         for _ in 0..steps {
-            knots[0].0 += dx as i16;
-            knots[0].1 += dy as i16;
+            knots[0].0 += dx;
+            knots[0].1 += dy;
 
             for i in 1..10 {
                 let diff_x = knots[i - 1].0 - knots[i].0;
@@ -36,6 +36,9 @@ fn solve(input: &str) -> AnswerSet {
                 if diff_x.abs() > 1 || diff_y.abs() > 1 {
                     knot.0 += diff_x.signum();
                     knot.1 += diff_y.signum();
+                } else {
+                    // Rest of rope does not move
+                    break;
                 }
             }
 
@@ -53,7 +56,7 @@ fn solve(input: &str) -> AnswerSet {
     }
 }
 
-fn parse_dir(char: u8) -> (i8, i8) {
+fn parse_dir(char: u8) -> (i16, i16) {
     match char {
         b'R' => (1, 0),
         b'L' => (-1, 0),
