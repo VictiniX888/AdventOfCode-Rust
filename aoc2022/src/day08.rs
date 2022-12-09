@@ -2,11 +2,51 @@ use crate::*;
 
 pub const SOLUTION: Solution = Solution { day: 8, solve };
 
-// ~405 us
+/* ======== O(N SQRT N) SOLUTION ======== */
+// ~430 us
 fn solve(input: &str) -> AnswerSet {
     let map = generate_map(input);
-    let p1 = find_visible_trees(&map);
-    let p2 = find_max_scenic_score(&map);
+
+    let mut p1 = 0;
+    let mut p2 = 0;
+
+    for r in 1..map.rows - 1 {
+        for c in 1..map.cols - 1 {
+            let mut scenic_score = 1;
+            let mut visible = false;
+
+            for (dr, dc) in [(1, 0), (-1, 0), (0, 1), (0, -1)] {
+                let height = *map.get(r, c);
+                let mut seen = 0;
+                let mut r = r as isize + dr;
+                let mut c = c as isize + dc;
+
+                while r >= 0 && r < map.rows as isize && c >= 0 && c < map.cols as isize {
+                    seen += 1;
+
+                    if height <= *map.get(r as usize, c as usize) {
+                        break;
+                    }
+
+                    r = r + dr;
+                    c = c + dc;
+                }
+                scenic_score *= seen;
+
+                if (r < 0 || r >= map.rows as isize || c < 0 || c >= map.cols as isize) && !visible
+                {
+                    visible = true;
+                    p1 += 1;
+                }
+            }
+
+            if scenic_score > p2 {
+                p2 = scenic_score;
+            }
+        }
+    }
+
+    p1 += (2 * map.rows + 2 * (map.cols - 2)) as u16;
 
     AnswerSet {
         p1: Answer::U16(p1),
@@ -14,25 +54,10 @@ fn solve(input: &str) -> AnswerSet {
     }
 }
 
-fn find_max_scenic_score(map: &Grid<u8>) -> u32 {
-    let mut max_score = 0;
-
-    for r in 0..map.rows {
-        for c in 0..map.cols {
-            let score = calculate_scenic_score(r, c, map);
-            if score > max_score {
-                max_score = score;
-            }
-        }
-    }
-
-    max_score
-}
-
 fn calculate_scenic_score(r: usize, c: usize, map: &Grid<u8>) -> u32 {
     let mut scenic_score = 1;
 
-    for (dr, dc) in [(1, 0), (-1, 0), (0, 1), (0, -1)].iter() {
+    for (dr, dc) in [(1, 0), (-1, 0), (0, 1), (0, -1)] {
         let mut visible = 0;
         let mut r = r;
         let mut c = c;
@@ -48,97 +73,126 @@ fn calculate_scenic_score(r: usize, c: usize, map: &Grid<u8>) -> u32 {
                 break;
             }
         }
-
-        scenic_score *= visible;
+        scenic_score *= visible as u32;
     }
 
     scenic_score
 }
 
-fn find_visible_trees(map: &Grid<u8>) -> u16 {
-    let mut count = 0;
+/* ======== O(N) SOLUTION ======== */
+// ~575 us
+fn solve_linear(input: &str) -> AnswerSet {
+    let map = generate_map(input);
 
-    let mut seen = Grid::new(map.rows, map.cols, false);
+    let dirs = [
+        IterDirection {
+            outer_range: Range::new(0, map.rows as isize, 1),
+            inner_range: Range::new(0, map.cols as isize, 1),
+            row_major: true,
+        },
+        IterDirection {
+            outer_range: Range::new(0, map.rows as isize, 1),
+            inner_range: Range::new(map.cols as isize - 1, -1, -1),
+            row_major: true,
+        },
+        IterDirection {
+            outer_range: Range::new(0, map.cols as isize, 1),
+            inner_range: Range::new(0, map.rows as isize, 1),
+            row_major: false,
+        },
+        IterDirection {
+            outer_range: Range::new(0, map.cols as isize, 1),
+            inner_range: Range::new(map.rows as isize - 1, -1, -1),
+            row_major: false,
+        },
+    ];
 
-    let mut tallest;
+    let mut scores = Grid::new(map.rows, map.cols, (false, 1));
 
-    // Outer wall is always visible so we skip it
-    for r in 1..map.rows - 1 {
-        tallest = *map.get(r, 0);
+    let mut visible = 0;
+    let mut max_scenic_score = 0;
 
-        for c in 1..map.cols - 1 {
-            let height = *map.get(r, c);
-            if height > tallest {
-                tallest = height;
-                count += 1;
-                *seen.get_mut(r, c) = true;
+    for dir in dirs {
+        for x in dir.outer_range {
+            let mut cache = [-1; 10];
+            let mut tallest = -1;
+            for y in dir.inner_range.clone() {
+                let r = if dir.row_major { x } else { y } as usize;
+                let c = if dir.row_major { y } else { x } as usize;
 
-                if tallest == 9 {
-                    break;
-                }
-            }
-        }
+                // Get viewing distance
+                let &height = map.get(r, c);
+                let distance = (cache[height as usize] + 1) as u32;
+                let score = scores.get_mut(r, c);
+                (*score).1 *= distance;
 
-        tallest = *map.get(r, map.cols - 1);
-
-        for c in (1..map.cols).rev() {
-            let height = *map.get(r, c);
-            if height > tallest {
-                tallest = height;
-                let seen = seen.get_mut(r, c);
-                if *seen {
-                    break;
-                } else {
-                    count += 1;
-                    *seen = true;
-                }
-
-                if tallest == 9 {
-                    break;
-                }
-            }
-        }
-    }
-
-    for c in 1..map.cols - 1 {
-        tallest = *map.get(0, c);
-
-        for r in 1..map.rows - 1 {
-            let height = *map.get(r, c);
-            if height > tallest {
-                tallest = height;
-                let seen = seen.get_mut(r, c);
-                if !*seen {
-                    count += 1;
-                    *seen = true;
+                if (*score).1 > max_scenic_score {
+                    max_scenic_score = (*score).1;
                 }
 
-                if tallest == 9 {
-                    break;
-                }
-            }
-        }
-
-        tallest = *map.get(map.rows - 1, c);
-
-        for r in (1..map.rows - 1).rev() {
-            let height = *map.get(r, c);
-            if height > tallest {
-                tallest = height;
-                let seen = seen.get_mut(r, c);
-                if !*seen {
-                    count += 1;
-                    *seen = true;
+                // Check if visible from edge
+                if height as i8 > tallest {
+                    if !(*score).0 {
+                        (*score).0 = true;
+                        visible += 1;
+                    }
+                    tallest = height as i8;
                 }
 
-                if tallest == 9 {
-                    break;
+                // Update cache
+                for i in 0..=height as usize {
+                    cache[i] = 0;
+                }
+
+                for i in height as usize + 1..cache.len() {
+                    cache[i] += 1;
                 }
             }
         }
     }
 
-    (count + 2 * map.rows + 2 * (map.cols - 2)) as u16
+    AnswerSet {
+        p1: Answer::U16(visible),
+        p2: Answer::U32(max_scenic_score),
+    }
+}
+struct IterDirection {
+    outer_range: Range,
+    inner_range: Range,
+    row_major: bool,
+}
+
+#[derive(Clone)]
+struct Range {
+    start: isize, // inclusive
+    end: isize,   // exclusive
+    step: isize,
+    curr: isize,
+}
+
+impl Range {
+    fn new(start: isize, end: isize, step: isize) -> Self {
+        Range {
+            start,
+            end,
+            step,
+            curr: start,
+        }
+    }
+}
+
+impl Iterator for Range {
+    type Item = isize;
+
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.curr != self.end {
+            let next = Some(self.curr);
+            self.curr += self.step;
+            next
+        } else {
+            None
+        }
+    }
 }
 
 fn generate_map(input: &str) -> Grid<u8> {
