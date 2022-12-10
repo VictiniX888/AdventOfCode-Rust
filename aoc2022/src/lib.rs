@@ -8,6 +8,7 @@ pub mod day06;
 pub mod day07;
 pub mod day08;
 pub mod day09;
+pub mod day10;
 
 use std::{fmt::Display, fs};
 
@@ -17,6 +18,7 @@ pub enum Answer {
     U32(u32),
     U64(u64),
     Usize(usize),
+    I32(i32),
 }
 
 impl Display for Answer {
@@ -30,6 +32,7 @@ impl Display for Answer {
                 Self::U32(num) => num.to_string(),
                 Self::U64(num) => num.to_string(),
                 Self::Usize(num) => num.to_string(),
+                Self::I32(num) => num.to_string(),
             }
         )
     }
