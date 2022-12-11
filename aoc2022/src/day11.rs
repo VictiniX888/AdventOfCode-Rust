@@ -25,6 +25,7 @@ fn solve_optimized(input: &str) -> AnswerSet {
     let mut inspections = vec![0; monkeys.len()];
     let mut count = vec![0; monkeys.len()];
 
+    // Iterate through each item instead of each monkey, since items behave independently of each other
     for (loc, &item) in monkeys
         .iter()
         .enumerate()
@@ -36,6 +37,7 @@ fn solve_optimized(input: &str) -> AnswerSet {
         let mut cache = HashMap::new();
         let mut thrown;
 
+        // Loop while item state (value and monkey) does not repeat
         while cache.get(&(item, loc)).is_none() {
             cache.insert((item, loc), rounds);
             thrown = monkeys[loc].process_item(item, modulus, false);
@@ -56,12 +58,14 @@ fn solve_optimized(input: &str) -> AnswerSet {
             *total += count;
         }
 
+        // Cycle found
         let cycle_len = rounds - cache.get(&(item, loc)).unwrap();
         let cycles = (10_000 - rounds) / cycle_len;
         let rem_rounds = (10_000 - rounds) % cycle_len;
         let mut rem = Vec::new();
 
         count.fill(0);
+        // Replay cycle (this was faster than keeping track of count in the map at every stage)
         for i in 0..cycle_len {
             if i == rem_rounds {
                 rem = count.clone();
