@@ -77,6 +77,13 @@ pub fn bench_day11(c: &mut Criterion) {
     });
 }
 
+pub fn bench_day12(c: &mut Criterion) {
+    let input = black_box(aoc2022::read_input(12));
+    c.bench_function("Day 12", |b| {
+        b.iter(|| (aoc2022::day12::SOLUTION.solve)(&input))
+    });
+}
+
 criterion_group!(
     all,
     bench_day01,
@@ -89,7 +96,8 @@ criterion_group!(
     bench_day08,
     bench_day09,
     bench_day10,
-    bench_day11
+    bench_day11,
+    bench_day12,
 );
 
 criterion_main!(all);
