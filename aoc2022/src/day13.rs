@@ -6,30 +6,36 @@ pub const SOLUTION: Solution = Solution { day: 13, solve };
 
 // ~1 ms
 fn solve(input: &str) -> AnswerSet {
-    let packets = input
-        .split("\n\n")
-        .flat_map(|group| group.split('\n'))
-        .map(|packet| parse_packet(&mut packet.bytes().peekable()))
-        .collect::<Vec<Packet>>();
-
-    let p1 = packets
-        .chunks_exact(2)
-        .enumerate()
-        .filter(|(_, group)| cmp_packets(&group[0], &group[1]) == Ordering::Less)
-        .map(|(i, _)| i + 1)
-        .sum::<usize>();
-
     let div1 = Packet::List(vec![Packet::List(vec![Packet::Num(2)])]);
     let div2 = Packet::List(vec![Packet::List(vec![Packet::Num(6)])]);
     let mut div1_count = 0;
     let mut div2_count = 0;
-    for packet in packets {
-        if cmp_packets(&packet, &div1) == Ordering::Less {
-            div1_count += 1;
-        } else if cmp_packets(&packet, &div2) == Ordering::Less {
-            div2_count += 1;
-        }
-    }
+
+    let p1 = input
+        .split("\n\n")
+        .map(|group| group.split_once('\n').unwrap())
+        .map(|(packet1, packet2)| {
+            let packet1 = parse_packet(&mut packet1.bytes().peekable());
+            let packet2 = parse_packet(&mut packet2.bytes().peekable());
+
+            if cmp_packets(&packet1, &div1) == Ordering::Less {
+                div1_count += 1;
+            } else if cmp_packets(&packet1, &div2) == Ordering::Less {
+                div2_count += 1;
+            }
+
+            if cmp_packets(&packet2, &div1) == Ordering::Less {
+                div1_count += 1;
+            } else if cmp_packets(&packet2, &div2) == Ordering::Less {
+                div2_count += 1;
+            }
+
+            cmp_packets(&packet1, &packet2)
+        })
+        .enumerate()
+        .filter(|&(_, ord)| ord == Ordering::Less)
+        .map(|(i, _)| i + 1)
+        .sum::<usize>();
 
     let p2 = (div1_count + 1) * (div1_count + div2_count + 2);
 
