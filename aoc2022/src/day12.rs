@@ -4,6 +4,7 @@ use crate::*;
 
 pub const SOLUTION: Solution = Solution { day: 12, solve };
 
+// ~130 us
 fn solve(input: &str) -> AnswerSet {
     let (mut map, start, lowests) = generate_map(input);
 
