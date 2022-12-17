@@ -61,3 +61,9 @@ pub fn run(solution: Solution) -> AnswerSet {
 pub fn read_input(day: u8) -> String {
     fs::read_to_string(format!("input/day{:02}.txt", day)).expect("Failed to read input file")
 }
+
+pub fn pause() -> Result<(), std::io::Error> {
+    std::io::stdin().read_line(&mut String::new())?;
+
+    Ok(())
+}
