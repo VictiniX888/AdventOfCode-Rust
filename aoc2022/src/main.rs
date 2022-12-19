@@ -21,6 +21,7 @@ fn main() {
                 14 => aoc2022::day14::SOLUTION,
                 15 => aoc2022::day15::SOLUTION,
                 16 => aoc2022::day16::SOLUTION,
+                17 => aoc2022::day17::SOLUTION,
                 _ => panic!("Invalid day"),
             });
             println!("Day {}", day);

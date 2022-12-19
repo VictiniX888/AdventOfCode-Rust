@@ -37,7 +37,7 @@ fn bfs_double(flow_map: &[u32], dist: &[[u32; N]; N], start_time: u32) -> u32 {
     let mut max = 0;
 
     // Our end states exist at the region where timestep = LIMIT - 1 and loc = 0
-    // We only have to check the first half of the range because the other half will necessarily be covered by the elephant (currently not implemented)
+    // We only have to check the first half of the range because the other half will necessarily be covered by the elephant
     for state1 in (LIMIT - 1) << 20..(((LIMIT - 1) << 20) + (1 << (16 - 1))) {
         let flow_rate_1 = cache[state1 as usize];
 
