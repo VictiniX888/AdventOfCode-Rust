@@ -119,6 +119,20 @@ pub fn bench_day17(c: &mut Criterion) {
     });
 }
 
+pub fn bench_day18(c: &mut Criterion) {
+    let input = black_box(aoc2022::read_input(18));
+    c.bench_function("Day 18", |b| {
+        b.iter(|| (aoc2022::day18::SOLUTION.solve)(&input))
+    });
+}
+
+pub fn bench_day19(c: &mut Criterion) {
+    let input = black_box(aoc2022::read_input(19));
+    c.bench_function("Day 19", |b| {
+        b.iter(|| (aoc2022::day19::SOLUTION.solve)(&input))
+    });
+}
+
 criterion_group!(
     all,
     bench_day01,
@@ -138,6 +152,8 @@ criterion_group!(
     bench_day15,
     bench_day16,
     bench_day17,
+    bench_day18,
+    bench_day19,
 );
 
 criterion_main!(all);
