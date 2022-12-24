@@ -7,7 +7,7 @@ use crate::*;
 
 pub const SOLUTION: Solution = Solution { day: 19, solve };
 
-// ~ 880 ms
+// ~ 680 ms
 fn solve(input: &str) -> AnswerSet {
     let blueprints = parse_input(input);
     // println!("{:?}", blueprints);
@@ -22,7 +22,7 @@ fn solve(input: &str) -> AnswerSet {
     let p2: usize = blueprints
         .iter()
         .take(3)
-        .map(|blueprint| calculate_quality_level(blueprint, 32, [5, 10, 10, usize::MAX]))
+        .map(|blueprint| calculate_quality_level(blueprint, 32, [4, 10, 10, usize::MAX]))
         .product();
     // println!("{}", now.elapsed().as_secs());
 

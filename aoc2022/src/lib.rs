@@ -18,6 +18,7 @@ pub mod day16;
 pub mod day17;
 pub mod day18;
 pub mod day19;
+pub mod day20;
 
 use std::{fmt::Display, fs};
 
@@ -28,6 +29,7 @@ pub enum Answer {
     U64(u64),
     Usize(usize),
     I32(i32),
+    I64(i64),
 }
 
 impl Display for Answer {
@@ -42,6 +44,7 @@ impl Display for Answer {
                 Self::U64(num) => num.to_string(),
                 Self::Usize(num) => num.to_string(),
                 Self::I32(num) => num.to_string(),
+                Self::I64(num) => num.to_string(),
             }
         )
     }
